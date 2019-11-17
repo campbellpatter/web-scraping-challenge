@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mars Data Scraping</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="jumbotron text-center">
+      <h1>Mission to Mars</h1>
+      <p><a class="btn btn-primary btn-lg" href="/scrape" role="button">Scrape New Data</a></p>
+    </div>
+
+    <!-- Mars Output -->
+    <div class="row">
+      <div class="col-md-12">
+          <h1 class="heading">Latest Mars News</h1>
+          <h2>{{my_data.news_title}}</h2>
+          <p>{{my_data.news_p}}</p>
+      </div>
+    </div>
+      
+    <div class="row">
+      <div class="col-md-8">
+          <h1 class="heading">Featured Mars Image</h1>
+          <img height='400' width='600' src={{my_data.featured}}>
+      </div>
+        
+      <div class="col-md-4">
+          <div style="border:3px solid grey; padding:15px; margin-top: 20px;">
+              <h3>Current Weather on Mars</h3>
+              <p>{{my_data.mars_weather}}</p>
+          </div>
+          
+          <div>
+              <h3>Mars Facts</h3>
+              {{my_data.mars_facts}}
+          </div>
+      </div>
+    </div>
+    
+    <h2 style="text-align:center" class='heading'>Mars Hemispheres</h2>
+    <hr>
+    <div class="row">
+      <div style="border:3px solid grey; padding:15px;" class="col-md-6">
+          <center><img  class='center' height='500' width='500' src={{my_data.img_urls[0].img_url}}></center>
+          <h3 style="text-align:center">{{my_data.img_urls[0].title}}</h3>
+      </div>
+      <div style="border:3px solid grey; padding:15px;" class="col-md-6">
+          <center><img  class='center' height='500' width='500' src={{my_data.img_urls[1].img_url}}></center>
+          <h3 style="text-align:center">{{my_data.img_urls[1].title}}</h3>
+      </div>
+      <br>
+      <br>
+      <div style="border:3px solid grey; padding:15px;" class="col-md-6">
+          <center><img  class='center' height='500' width='500' src={{my_data.img_urls[2].img_url}}></center>
+          <h3 style="text-align:center">{{my_data.img_urls[2].title}}</h3>
+      </div>
+      <div style="border:3px solid grey; padding:15px;" class="col-md-6">
+          <center><img  class='center' height='500' width='500' src={{my_data.img_urls[3].img_url}}></center>
+          <h3 style="text-align:center">{{my_data.img_urls[3].title}}</h3>
+      </div>
+      <br>
+    </div>
+      
+
+  </div>
+</body>
+
+</html>
