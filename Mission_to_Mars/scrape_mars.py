@@ -16,7 +16,7 @@ def scrape():
     
     ## Get latest news Title and Paragraph
     
-    url ='https://mars.nasa.gov/news/'
+    url ='https://mars.nasa.gov/news/'  #NASA
     
     browser.visit(url)
     time.sleep(2)  # allow time for browswer to redirect
@@ -33,32 +33,32 @@ def scrape():
     news_p = paragraphs[0].text.strip()
     
     ## Get featured image
-    url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars#submit'
+    url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars#submit'      #JPL
     browser.visit(url)
     html = browser.html
     soup = BeautifulSoup(html, 'html.parser')
     my_img_url = soup.find_all('div', class_='img')[0].find('img')['src']
     featured_image_url = 'https://www.jpl.nasa.gov/' + my_img_url
     
-    url = 'https://twitter.com/marswxreport?lang=en'
+    ## Get Weather Data
+    url = 'https://twitter.com/marswxreport?lang=en'    # Twitter
     browser.visit(url)
     html = browser.html
     soup = BeautifulSoup(html, 'html.parser')
-
- 
     headlines = soup.find_all('div', class_='content')
     
-    count = 0
+    # had to make sure given tweet was tagged with Mar Weather
+    # indexes first headline with 'Mars Weather', pulls description from that index
+    count = 0   
     for headline in headlines:
         if headline.find('strong').text == 'Mars Weather':
             mars_weather = soup.find_all('p', class_='TweetTextSize TweetTextSize--normal js-tweet-text tweet-text')[count].text.strip()
+            mars_weather = mars_weather.split("InSight ")[1].split('hPa')[0]   # cleaning unneccessary text
             break
         count += 1
         
-    
-
-    
-    url = 'https://space-facts.com/mars/'
+    ## Mars Facts
+    url = 'https://space-facts.com/mars/'   #Space-Facts.com
     tables = pd.read_html(url)
     myfacts_df = tables[0]
     myfacts_df['Metric'] = myfacts_df.iloc[:,0]
@@ -67,20 +67,35 @@ def scrape():
     myfacts_str = myfacts_df.to_html()
     myfacts_str = myfacts_str.replace('\n', '')
     
-    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    ## Hemispheres
+    
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'   # Astrogeology.usgs.gov
     browser.visit(url)
     html = browser.html
     soup = BeautifulSoup(html, 'html.parser')
-
     my_hems_titles = soup.find_all('div', class_='description')
     
-    titles = []
+    titles = []  # appends all hemisphere titles
+    img_urls = []  # appends all hemisphere img urls
+    
     for item in my_hems_titles:
-        titles.append(item.find('h3').text)
+        url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+        browser.visit(url)
+        html = browser.html
+        
+        my_title = item.find('h3').text   # takes title
+        titles.append(my_title)
+        
+        browser.click_link_by_partial_text(my_title)   #goes to link using title to search
+        html = browser.html            
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        
+        big_img = soup.find_all('img', class_='wide-image')[0]['src']
+        img_urls.append('https://astrogeology.usgs.gov' + big_img)   #takes img url of enhanced jpg :)
     
-    img_urls = ['https://astrogeology.usgs.gov/cache/images/cfa62af2557222a02478f1fcd781d445_cerberus_enhanced.tif_full.jpg', 'https://astrogeology.usgs.gov/cache/images/3cdd1cbf5e0813bba925c9030d13b62e_schiaparelli_enhanced.tif_full.jpg', 'https://astrogeology.usgs.gov/cache/images/ae209b4e408bb6c3e67b6af38168cf28_syrtis_major_enhanced.tif_full.jpg', 'https://astrogeology.usgs.gov/cache/images/7cf2da4bf549ed01c17f206327be4db7_valles_marineris_enhanced.tif_full.jpg']
-    
-    hemisphere_image_urls = [
+    # create dictionary for hemispheres
+    hemispheres = [
     {"title": titles[0], "img_url": img_urls[0]},
     {"title": titles[1], "img_url": img_urls[1]},
     {"title": titles[2], "img_url": img_urls[2]},
@@ -88,13 +103,14 @@ def scrape():
 ]
     
     
+    # dictionary to be returned
     my_data = {
         'news_title':news_title,
         'news_p':news_p,
         'featured': featured_image_url,
         'mars_weather': mars_weather,
         'mars_facts': myfacts_str,
-        'img_urls': hemisphere_image_urls
+        'img_urls': hemispheres
     }
     
     print("Scraping complete")
