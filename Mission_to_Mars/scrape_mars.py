@@ -3,41 +3,60 @@ from bs4 import BeautifulSoup
 import time
 import pandas as pd
 
-
+## initiate browswer - change executable path as needed
 def init_browser():
     executable_path = {'executable_path': '/usr/local/bin/chromedriver'}
     return Browser('chrome', **executable_path, headless=False)
 
+
+## scrape mars websites - returns a dictionary of various data types
 def scrape():
     
     browser = init_browser()
     
+    ## Get latest news Title and Paragraph
     
     url ='https://mars.nasa.gov/news/'
+    
     browser.visit(url)
-    time.sleep(2)
-    html = browser.html
+    time.sleep(2)  # allow time for browswer to redirect
+    
+    html = browser.html # collect html after redirect
     soup = BeautifulSoup(html, 'html.parser')
     
+    # scrape first title
     titles = soup.find_all('div', class_='content_title')
     news_title = titles[0].text.strip()
     
+    # scrape first paragraph
     paragraphs = soup.find_all('div', class_='article_teaser_body')
     news_p = paragraphs[0].text.strip()
     
-    url = 'https://www.jpl.nasa.gov/spaceimages/?search=mars&category=featured#submit'
+    ## Get featured image
+    url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars#submit'
     browser.visit(url)
-    browser.click_link_by_partial_text('FULL IMAGE')
-    
-    featured_image_url = 'https://www.jpl.nasa.gov/spaceimages/images/mediumsize/PIA16029_ip.jpg'
+    html = browser.html
+    soup = BeautifulSoup(html, 'html.parser')
+    my_img_url = soup.find_all('div', class_='img')[0].find('img')['src']
+    featured_image_url = 'https://www.jpl.nasa.gov/' + my_img_url
     
     url = 'https://twitter.com/marswxreport?lang=en'
     browser.visit(url)
     html = browser.html
     soup = BeautifulSoup(html, 'html.parser')
+
+ 
+    headlines = soup.find_all('div', class_='content')
     
-    mars_weather = soup.find_all('p', class_='TweetTextSize TweetTextSize--normal js-tweet-text tweet-text')[0].text.strip()
-    mars_weather = mars_weather.split('InSight ')[1].split('hPap')[0]
+    count = 0
+    for headline in headlines:
+        if headline.find('strong').text == 'Mars Weather':
+            mars_weather = soup.find_all('p', class_='TweetTextSize TweetTextSize--normal js-tweet-text tweet-text')[count].text.strip()
+            break
+        count += 1
+        
+    
+
     
     url = 'https://space-facts.com/mars/'
     tables = pd.read_html(url)
