@@ -64,9 +64,8 @@ def scrape():
     myfacts_df['Metric'] = myfacts_df.iloc[:,0]
     myfacts_df['Value'] = myfacts_df.iloc[:,1]
     myfacts_df = myfacts_df.iloc[:,2:4]
-    myfacts_str = myfacts_df.to_html()
-    myfacts_str = myfacts_str.replace('\n', '')
-    
+    myfacts_df.to_html('table.html')
+
     ## Hemispheres
     
     url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'   # Astrogeology.usgs.gov
@@ -109,7 +108,6 @@ def scrape():
         'news_p':news_p,
         'featured': featured_image_url,
         'mars_weather': mars_weather,
-        'mars_facts': myfacts_str,
         'img_urls': hemispheres
     }
     
