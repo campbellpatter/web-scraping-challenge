@@ -64,7 +64,7 @@ def scrape():
     myfacts_df['Metric'] = myfacts_df.iloc[:,0]
     myfacts_df['Value'] = myfacts_df.iloc[:,1]
     myfacts_df = myfacts_df.iloc[:,2:4]
-    myfacts_df.to_html('table.html')
+    facts_table = myfacts_df.to_html()
 
     ## Hemispheres
     
@@ -106,6 +106,7 @@ def scrape():
     my_data = {
         'news_title':news_title,
         'news_p':news_p,
+        'facts_table': facts_table,
         'featured': featured_image_url,
         'mars_weather': mars_weather,
         'img_urls': hemispheres
